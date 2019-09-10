@@ -108,10 +108,10 @@ System::System(const string &strVocFile, const string &strSettingsFile, const st
 
         mpVocabulary = new ORBVocabulary();
         bool bVocLoad = false;
-        if (has_suffix(strVocFile, ".txt"))
+        // if (has_suffix(strVocFile, ".txt"))
             bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
-        else
-            bVocLoad = mpVocabulary->loadFromBinaryFile(strVocFile);
+        // else
+            // bVocLoad = mpVocabulary->loadFromBinaryFile(strVocFile);
         if(!bVocLoad)
         {
             cerr << "Wrong path to vocabulary. " << endl;
