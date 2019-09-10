@@ -207,16 +207,19 @@ void PointCloudMapping::viewer()
 	        *globalMap += *p;	    
         }
 	
-	    PointCloud::Ptr tmp1(new PointCloud());
         voxel.setInputCloud( KfMap );
-        voxel.filter( *tmp1 );
-        KfMap->swap( *tmp1 );	
+
+        // PointCloud::Ptr tmp1(new PointCloud());
+        // voxel.filter( *tmp1 );
+        // KfMap->swap( *tmp1 );
+
         pcl_cloud_kf = *KfMap;	
 
 	    Cloud_transform(pcl_cloud_kf,pcl_filter);
 	    pcl::toROSMsg(pcl_filter, pcl_point);
 	    pcl_point.header.frame_id = "/pointCloud";
 	    pclPoint_pub.publish(pcl_point);
+
         lastKeyframeSize = N;
 	    cout << "Keyframe map publish time ="<<endl;
     }
