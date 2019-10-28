@@ -223,9 +223,10 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
 
 }
 
+// Remove dynamic points
 void Frame::CalculEverything( cv::Mat &imRGB, const cv::Mat &imGray,const cv::Mat &imDepth,const cv::Mat &imS)
 { 
-
+    // Determine whether the segmentation image has dynamic objects (i.e. people) or not
     int flagprocess = 0;
     for ( int m=0; m<imS.rows; m+=1 )
     {
@@ -243,6 +244,8 @@ void Frame::CalculEverything( cv::Mat &imRGB, const cv::Mat &imGray,const cv::Ma
         break;
     }
 
+    // If find any dynamic objects, remove corresponding keypoints
+    //  by calling `mpORBextractorLeft->CheckingMovingKeyPoints()`
     if(!T_M.empty() && flagprocess )
     {
         std::chrono::steady_clock::time_point tc1 = std::chrono::steady_clock::now();

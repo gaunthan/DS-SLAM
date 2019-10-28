@@ -1059,6 +1059,7 @@ void ORBextractor::DeleteOneRowOfMat(cv::Mat& object, int num)
     }
 }
 
+// Remove dynamic keypoints by segmentation image (@imS)
 int ORBextractor::CheckMovingKeyPoints( const cv::Mat &imGray, const cv::Mat &imS,std::vector<std::vector<cv::KeyPoint>>& mvKeysT,std::vector<cv::Point2f> T)
 {
    
@@ -1093,7 +1094,7 @@ int ORBextractor::CheckMovingKeyPoints( const cv::Mat &imGray, const cv::Mat &im
 	            break;
 	}
 	 
-	// Moving
+	// Remove moving keypoints
 	if(flag_orb_mov==1)
 	{
 	    for (int level = 0; level < nlevels; ++level)
@@ -1110,24 +1111,30 @@ int ORBextractor::CheckMovingKeyPoints( const cv::Mat &imGray, const cv::Mat &im
                
                 while(keypoint != mkeypoints.end())
 	            {
-		             cv::Point2f search_coord = keypoint->pt * scale;
-		             // Search in the semantic image
-		             if(search_coord.x >= (Camera::width -1)) search_coord.x=(Camera::width -1);
-		             if(search_coord.y >= (Camera::height -1)) search_coord.y=(Camera::height -1) ;
-		             int label_coord =(int)imS.ptr<uchar>((int)search_coord.y)[(int)search_coord.x];
-		             if(label_coord == PEOPLE_LABLE) 
-		             {
+                    // Since keypoints was scaled, to recover its real coordinates, we need to
+                    // multiply it by the scale factor
+		            cv::Point2f search_coord = keypoint->pt * scale;
+
+                    // Clip the coordinates to avoid out of bounds
+		            if(search_coord.x >= (Camera::width -1)) search_coord.x=(Camera::width -1);
+		            if(search_coord.y >= (Camera::height -1)) search_coord.y=(Camera::height -1) ;
+
+		            // Get keypoint's semantic label, remove it if is labeled as people
+		            int label_coord =(int)imS.ptr<uchar>((int)search_coord.y)[(int)search_coord.x];
+		            if(label_coord == PEOPLE_LABLE)
+		            {
 			            keypoint=mkeypoints.erase(keypoint);		       
-		             }
-		             else
-		             {
+		            }
+		            else
+		            {
 			            keypoint++;
-		             }
+		            }
 	             }
 	          }
       }
       return flag_orb_mov;
 }
+
 void ORBextractor::operator()(cv::InputArray _image, cv::InputArray _mask, vector<vector<cv::KeyPoint>>& _keypoints
                       )
 { 
